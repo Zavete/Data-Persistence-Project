@@ -6,20 +6,23 @@ using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+
     public Brick BrickPrefab;
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public Text bestScoreTXT;
     public Text ScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
     private int m_Points;
+    private int m_highScore;
     
     private bool m_GameOver = false;
 
-    
     // Start is called before the first frame update
+
     void Start()
     {
         const float step = 0.6f;
@@ -36,6 +39,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+        TitleName.Instance.LoadData();
+        bestScoreTXT.text = "Best Score: " + TitleName.Instance.myNameSaved + " = " + TitleName.Instance.highScoreSaved;
     }
 
     private void Update()
@@ -59,7 +64,7 @@ public class MainManager : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
-        }
+        }  
     }
 
     void AddPoint(int point)
@@ -72,5 +77,27 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        if (m_Points > TitleName.Instance.highScoreSaved)
+        {
+            TitleName.Instance.highScoreSaved = m_Points;
+            TitleName.Instance.myNameSaved = TitleName.Instance.myName;
+            TitleName.Instance.SaveData();
+            
+            bestScoreTXT.text = "Best Score: " + TitleName.Instance.myNameSaved + " = " + TitleName.Instance.highScoreSaved;
+  
+        }
+        
+    }
+
+    public void BackToStart()
+    {
+        SceneManager.LoadScene(0);
+        DontDestroyOnLoad(gameObject);
+    }
+
+    public void HighScoreScene()
+    {
+        SceneManager.LoadScene(2);
+        DontDestroyOnLoad(gameObject);
     }
 }
